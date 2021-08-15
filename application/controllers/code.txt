@@ -1,0 +1,34 @@
+$email = $this->input->post('email');
+        $password = $this->input->post('password');
+
+        $tbl_register = $this->db->get_where('tbl_register', ['email' => $email])->row_array();
+
+        if($tbl_register){
+            if($tbl_register['status_aktif'] == 1) {
+
+                if(password_verify('$password', $tbl_register['password'])) {
+                    $data = [
+                        'email' => $tbl_register['email'],
+                        'role_id' => $tbl_register['role_id']
+                    ];
+                    $this->session->set_userdata($data);
+                    redirect('dashboard');
+
+                } else {
+                    $this->session->set_flashdata('pesan', '<div class="alert alert-danger"
+                   role="alert">Password/Email Salah!</div>');
+                   redirect('auth/login_user');  
+                }
+
+            } else {
+
+                $this->session->set_flashdata('pesan', '<div class="alert alert-danger"
+                   role="alert">Emali Belum di Aktivasi</div>');
+                   redirect('auth/login_user');  
+            }
+
+        } else {
+            $this->session->set_flashdata('pesan', '<div class="alert alert-danger"
+               role="alert">Akun Belum Terdaftar!</div>');
+               redirect('auth/login_user');  
+        }
